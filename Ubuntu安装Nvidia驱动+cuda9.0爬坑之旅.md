@@ -77,10 +77,21 @@ sudo sh ./NVIDIA-Linux-x86_64-390.48.run –no-x-check -no-nouveau-check -no-ope
 # * –no-x-check：表示安装驱动时不检查X服务，非必需–
 # * no-nouveau-check：表示安装驱动时不检查nouveau，非必需。
 # * -Z, --disable-nouveau：禁用nouveau。此参数非必需，因为之前已经手动禁用了nouveau。
+# 开启图形界面
+sudo serice lightdm start
+# 然后重启
 ```
 #### <a name="fenced-code-block">注意：大坑来了</a>
 * 重启之后循环登录界面，就是你输入密码登录后，它黑屏闪一下，然后又回到登录界面。这里的我试了很多办法，都没有什么效果，直到我根据[这篇文章](https://wizyoung.github.io/Ubuntu下GTX1080显卡驱动折腾小记/)的思路将bios中(Advanced -> System Agent -> Graphics Configuration)的iGPU Multi-Monitor由disabled更改为enabled，Primary Display由CPU Graphics更改为PCIE。然后重启，插上nvidia独显的HDMI接口，拔掉集成显卡的VGA接口，然后就解决的循环登录问题。
 * 由于我试验的服务器中有多个Ubuntu内核，而且我之前还搞崩了一个内核4.4.0.75，所以需要注意重启之后可能会自动进入另外一个内核，所以这里需要重新设置内核默认启动项(不过，我这里很奇怪的是，设置好默认内核启动之后，开机会自动进入我设置的内核，但是重启reboot却会进入另外一个内核)。
+* 如果出现图形界面丢失，可以尝试一下Ctrl+ALT+F1 进入控制台，输入用户名和密码进入系统，输入以下命令:
+
+```
+cd /etc/X11    
+sudo cp xorg.conf.failsafe xorg.conf   
+sudo reboot  
+```
+
 
 ### 5.检查驱动是否安装完成
 ```
